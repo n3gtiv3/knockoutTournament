@@ -1,0 +1,154 @@
+/*
+    Edit me.
+*/
+
+/*
+	Style inputs
+*/
+.mainDiv h1{
+    padding: 20px 0;
+    font-size: 140%;
+    font-weight: 300;
+    text-align: center;
+    color: #fff;
+    margin: -16px -16px 16px -16px;
+}
+.mainDiv input[type="text"],
+.mainDiv input[type="number"],
+.mainDiv select
+{
+    -webkit-transition: all 0.30s ease-in-out;
+    -moz-transition: all 0.30s ease-in-out;
+    -ms-transition: all 0.30s ease-in-out;
+    -o-transition: all 0.30s ease-in-out;
+    outline: none;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    width: 100%;
+    background: #fff;
+    margin-bottom: 4%;
+    border: 1px solid #ccc;
+    padding: 3%;
+    color: #555;
+    font: 95% Arial, Helvetica, sans-serif;
+}
+.mainDiv input[type="text"]:focus,
+.mainDiv input[type="number"]:focus,
+.mainDiv select:focus
+{
+    box-shadow: 0 0 5px #43D1AF;
+    padding: 3%;
+    border: 1px solid #43D1AF;
+}
+
+.mainDiv button{
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    width: 100%;
+    padding: 3%;
+    background: #43D1AF;
+    border-bottom: 2px solid #30C29E;
+    border-top-style: none;
+    border-right-style: none;
+    border-left-style: none;    
+    color: #fff;
+}
+..mainDiv button:hover{
+    background: #2EBC99;
+}
+
+/*
+	Tournament Progress Div Css
+*/
+.error{
+	color:Red;
+}
+.tile {
+  width: 20%;
+  height: 30%;
+  background-color: #FFF;
+}
+.blink{
+  animation: blinker 1s linear infinite;
+}
+.done{
+    background-color: rgba(255, 30, 30, 0.8) !important;
+}
+@keyframes blinker {  
+  from {background-color: #cce6ff;}
+    to {background-color: rgba(255, 30, 30, 0.8);}
+}
+
+.progress_bar { 
+  width: 200px;
+  height: 150px;
+  background: #63a3e3;
+  text-align: center;
+}
+
+.messgae {
+  font-size: 48px;
+  line-height: 88px;
+  color: #fff;
+} 
+
+.bar { 
+  height: 20px;
+  margin: 5px auto;
+  text-align: left;
+  width:100%;
+}
+
+.tile { 
+  position: relative;
+  width: 20px;
+  height: 10px;
+  margin: 2px;
+  background-color: #cce6ff;
+  float:left;
+  z-index: 2;
+}
+.loading {
+  top: 50%;
+  left: 50%;
+  margin-top:15px;
+}
+.loading-bar {
+  display: inline-block;
+  width: 4px;
+  height: 18px;
+  border-radius: 4px;
+  animation: loading 1s ease-in-out infinite;
+}
+.loading-bar:nth-child(1) {
+  background-color: #3498db;
+  animation-delay: 0;
+}
+.loading-bar:nth-child(2) {
+  background-color: #c0392b;
+  animation-delay: 0.09s;
+}
+.loading-bar:nth-child(3) {
+  background-color: #f1c40f;
+  animation-delay: .18s;
+}
+.loading-bar:nth-child(4) {
+  background-color: #27ae60;
+  animation-delay: .27s;
+}
+
+@keyframes loading {
+  0% {
+    transform: scale(1);
+  }
+  20% {
+    transform: scale(1, 2.2);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.winner h1 { color: #ffffff; font-family: 'Raleway',sans-serif; font-size: 62px; font-weight: 800; line-height: 72px; margin: 0 0 24px; text-align: center; }

@@ -1,0 +1,62 @@
+html {
+  font: 100%/1.5 "Roboto", Verdana, sans-serif;
+  color: #dcdcdc;
+  background-color: #16324f;
+  background-image:url("../images/tournament.png");
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  -webkit-font-smoothing: antialiased;
+  width: 100%;
+  overflow: hidden-x;
+  text-align: center;
+  box-sizing: border-box;
+
+}
+
+footer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: .05rem;
+  text-align: center;
+  font-size: 0.7rem;
+  color: white;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+.content {
+  margin-bottom: 10rem;
+}
+
+@media (min-width: 650px) {
+  html {
+    height: 100%;
+  }
+
+  html:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    margin-right: -0.25em;
+  }
+
+  body {
+    display: inline-block;
+    vertical-align: middle;
+    max-width: 38rem;
+
+
+  }
+}
+
+@media(max-width: 650px) {
+  footer {
+    display: none;
+  }
+}

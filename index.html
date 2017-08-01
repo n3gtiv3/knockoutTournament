@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <title>Knockout Tournament</title>
+    <link rel="stylesheet" href="./client/css/layout.css">
+    <link rel="stylesheet" href="./client/css/styles.css">
+   <!--  <link rel="stylesheet" href="./client/css/inputs.css">
+    <link rel="stylesheet" href="./client/css/animate.css">
+    <link rel="stylesheet" href="./client/css/emojis.css">
+    <link rel="stylesheet" href="./client/css/confetti.css"> -->
+  </head>
+  <body >
+    <!-- Edit me. -->
+    <div id = "mainView">
+        <div  class = "winner" style = "display: none;">
+            <h1>congratulations</h1>
+            <h1 id="winner" ></h1>!!
+        </div>
+        <div id = "coc" style = "display:none;"><img src = "./client/images/match.gif" /></div>
+        <div  style="display: none;">
+          <iframe id = "cocMusic" width="300" height="300" src="" frameborder="0" allowfullscreen=""></iframe>
+        </div>
+        <div class="message" id = "messageElem"></div>
+        <div class = "mainDiv">
+            <!-- For tests to pass, the IDs of the elements below MUST NOT change. -->
+            <input id="teamsPerMatch" placeholder="Teams per match" type="text" />
+            <input id="numberOfTeams" placeholder="Number of teams" type="text" />
+            <button id="start">Start</button>
+            <div class="loading"  id = "loader" style = "display:none;">
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+              <div class="loading-bar"></div>
+            </div>
+           <div id = "tournamentProgress" class="tournament_progress" style = "display:none;">
+              <div id = "matches" class="bar">
+                <div id = "match" class="tile"></div>
+              </div>
+           </div>
+        </div>
+    </div>
+
+    <script type = "application/javascript" src = "/client/utils/domSelectors.js"></script>
+    <script type = "application/javascript" src = "/client/utils/constants.js"></script>
+    <script type = "application/javascript" src = "/client/utils/utility.js"></script>
+    <script type = "application/javascript" src = "/client/utils/clientUtility.js"></script>
+    <script type = "application/javascript" src = "/client/base/pubSub.js"></script>
+    <script type = "application/javascript" src = "/client/tournament/matchQueue.js"></script>
+    <script type = "application/javascript" src = "/client/tournament/tournamentService.js"></script>
+    <script type = "application/javascript" src = "/client/tournament/tournament.js"></script>
+    <script type = "application/javascript" src = "/client/tournament/tournamentModel.js"></script>
+    <script type = "application/javascript" src = "/client/tournament/tournamentView.js"></script>
+    <script type = "application/javascript" src = "/client/base/ajaxWrapper.js"></script>
+    <script type = "application/javascript" src = "/client/init.js"></script>
+
+
+  </body>
+</html>
