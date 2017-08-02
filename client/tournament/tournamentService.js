@@ -1,18 +1,23 @@
 class TournamentService {
-
-	constructor(){
+	/**
+	 * @param  {Object} httpRequest - httpRequest wrapper for making fetch calls
+	 */
+	constructor(requestController){
+		this.requestController = requestController;
 	}
     createTournament(teamsPerMatch, numberOfTeams) {
-    	return HTTPRequest.post("/tournament", {numberOfTeams, teamsPerMatch});
+    	this.requestController.setMaxRequests(TOURNAMENT.MAX_REQUEST);
+    	return this.requestController.post("/tournament", {numberOfTeams, teamsPerMatch});
 	}
 	getTeamData(tournamentId, teamId){
-		return HTTPRequest.get("/team", {tournamentId, teamId});
+		return this.requestController.get("/team", {tournamentId, teamId});
 
 	}
 	getMatchScore(tournamentId, round, match){
-		return HTTPRequest.get("/match", {tournamentId, round, match});
+		return this.requestController.get("/match", {tournamentId, round, match});
 	}
 	getWinner(tournamentId, teamScores, matchScore){
-		return HTTPRequest.get("/winner", {tournamentId, teamScores, matchScore});
+		return this.requestController.get("/winner", {tournamentId, teamScores, matchScore});
 	}
+
 }

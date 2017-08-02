@@ -1,10 +1,10 @@
-class TournamentController {
+	class TournamentController {
 
-	constructor(model){
+	constructor(model, tournamentService){
 		this.model = model;
 		this.matchQueue = new MatchQueue();
 		this.matchQueue.subscribe(EVENTLISTENER.CONDUCT_MATCH, this);
-		this.tournamentService = new TournamentService();
+		this.tournamentService = tournamentService;
 	}
 	resetController(){
 		this.model.reset();
@@ -15,10 +15,17 @@ class TournamentController {
 		if(i === matches.length){
 			return ;
 		}
-		this.iterateOverTeam(matches[i].teamIds, matches[i].match);
-		this.addMatchesToQueue(matches, i + 1);
+		if(i === 0){
+			this.iterateOverTeams(matches[i].teamIds, matches[i].match);
+			this.addMatchesToQueue(matches, i + 1);
+		}else{
+			setTimeout(() => {
+				this.iterateOverTeams(matches[i].teamIds, matches[i].match);
+				this.addMatchesToQueue(matches, i + 1);
+			}, Utility.getDelay(i));
+		}
 	}
-	iterateOverTeam(teams, matchId){
+	iterateOverTeams(teams, matchId){
 		teams.forEach((teamId) => {
 				let teamHash = Utility.getKey(TOURNAMENT.FIRST_ROUND, matchId, this.model.teamsPerMatch);
 				this.matchQueue.push(teamId, teamHash);
@@ -36,7 +43,6 @@ class TournamentController {
 		if(this.model.error){
 			return ;
 		}
-		this.delay = Utility.getDelay(this.model.teamsPerMatch);
 		this.createMatchQueue(this.model.teamsPerMatch);
 		//call create tournament service;
 		this.tournamentService.createTournament(this.model.teamsPerMatch, this.model.numberOfTeams)

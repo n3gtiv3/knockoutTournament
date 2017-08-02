@@ -11,7 +11,17 @@ const EVENTLISTENER = {
 
 const TOURNAMENT = {
 	FIRST_ROUND : 0,
-	INT_MAX     : 1000000000
+	MAX_REQUEST : 8
+}
+const REQUEST_TYPE = {
+	GET : "GET",
+	POST: "POST"
+}
+const API_URL = {
+	TOURNAMENT : "/tournament",
+	TEAM       : "/team",
+	MATCH      : "/match",
+	WINNER     : "/winner"
 }
 const MESSAGES = {
 	DEFAULT_ERROR_MESSAGE :  "Something went wrong!",

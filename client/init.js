@@ -3,7 +3,8 @@
 
 const tournamentModel = new TournamentModel();
 const tournamentView = new TournamentView(tournamentModel);
-const tournamentService = new TournamentService();
+const requestController = new RequestController();
+const tournamentService = new TournamentService(requestController);
 const tournamentController = new TournamentController(tournamentModel, tournamentService);
 
 
