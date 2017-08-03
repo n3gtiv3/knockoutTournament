@@ -24,13 +24,6 @@ class Utility{
 	static decodeKey(key){
 		return key.split("#").map((elem) => elem - "");
 	}
-
-	static getDelay(){
-		return 100000;
-	}
-	static getBatchSize(teamsPerMatch){
-		return 10000/teamsPerMatch;
-	}
 	/**
 	 * Gets winning score given teams score and winning score
 	 * @param  {list} teams - list of teams playing a match

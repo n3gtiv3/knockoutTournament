@@ -1,5 +1,16 @@
+/**
+ * HTTP Wrapper for the fetch api 
+ */
+
 class HTTPRequest {
 
+	/**
+	 * It resolves fetch promise for both post and get currently 
+	 * @param  {Promise} fetchPromise promise object for fetch request
+	 * @param  {Function} resolve     function called on success
+	 * @param  {Function} reject      function called on error
+	 * @return {void}              
+	 */
 	static resolveFetch(fetchPromise, resolve, reject){
 		fetchPromise.then((response) => {
 				let dataPromise;
@@ -18,7 +29,13 @@ class HTTPRequest {
 				reject(error);
 			});
 	}
-	static get(url, params){
+	/**
+	 * Performs a get request and returns a new promise object
+	 * @param  {String} url    
+	 * @param  {Object} params 
+	 * @return {Promise}      
+	 */
+	static get(url, params = {}){
 		let headers = new Headers({
 			"Content-Type" : "application/json",
 		});
@@ -33,6 +50,12 @@ class HTTPRequest {
 			this.resolveFetch(fetchPromise, resolve, reject);
 		});
 	}
+	/**
+	 * Performs a post request and returns a new promise object
+	 * @param  {String} url  
+	 * @param  {Object} data 
+	 * @return {void}      
+	 */
 	static post(url, data = {}){
 		const headers = {
 	      'Accept': 'application/json',
@@ -47,6 +70,11 @@ class HTTPRequest {
 		    this.resolveFetch(fetchPromise, resolve, reject);
 		});
 	}
+	/**
+	 * converts a json object to url encoded string
+	 * @param  {Object} json 
+	 * @return {String}      
+	 */
 	static jsonToQueryString(json) {
     return Object.keys(json).map(function(key) {
     		if(json[key] instanceof Array){

@@ -1,7 +1,15 @@
+/**
+ * Tournament view subscribes to the model for some events that happens in a tournamen
+ * It then updates the dom accordingly by using dom apis
+ */
 class TournamentView {
 
+	/**
+	 * Injects a model and subscribes to only those events that this view needs
+	 * @param  {Object} model 
+	 */
 	constructor(model){
-		this.model = model;
+		//subscribing for events
 		model.subscribe(EVENTLISTENER.TOURNAMENT_INITIATED, this);
 		model.subscribe(EVENTLISTENER.TOURNAMENT_CREATED, this);
 		model.subscribe(EVENTLISTENER.MATCH_STARTS, this);
@@ -10,126 +18,198 @@ class TournamentView {
 		model.subscribe(EVENTLISTENER.ERROR, this);
 		model.subscribe(EVENTLISTENER.RESET, this);
 	}
+	/**
+	 * Event handlers call this method when notifying about the occurence of any event
+	 * @param  {String}    eventName Name of the event 
+	 * @param  {...any[]} args       Arguments that is passed along by the publisher
+	 * @return {void}              
+	 */
 	notify(eventName, ...args){
 		switch (eventName) {
 			case EVENTLISTENER.RESET:
+			//resetting the view
 				this.resetView();
 				break;
 		    case EVENTLISTENER.TOURNAMENT_INITIATED:
-		    //Do something after the tournament starts;
-		    	this.showElement(domElements.loader);
+		    //Show loader after tournament is initiated
+		    	ClientUtility.showElement(domElements.loader);
 		        break;
 		    case EVENTLISTENER.TOURNAMENT_CREATED:
-		    //Do Something after Tournament is Created
-		    	this.hideElement(domElements.loader);
-		    	this.displayMatchBars(args[0], args[1], args[2]);
+		    //hide loader and display the tiles representing status of all the 
+		    //matches in the tournament
+		    	ClientUtility.hideElement(domElements.loader);
+		    	//display coc fife while the tournament is in progress
+		    	ClientUtility.showElement(domElements.cocGif);
+		    	this.displayMatchTiles(args[0], args[1], args[2]);
 		    	break;
 		    case EVENTLISTENER.MATCH_STARTS:
-		    //Do something before the match starts;
+		    //After a match has started, blink a tile which denotes that the match is in progress
 		    	this.blinkTile(args[0], args[1]);
 		        break;
 		    case EVENTLISTENER.MATCH_END:
-		    //Do something before the match ends;
+		    //After the match has ended fill the tile and display match winner
 		    	this.fillTile(args[0], args[1]);
 		    	this.showMatchWinner(args[0], args[1], args[2]);
 		        break;
 		    case EVENTLISTENER.TOURNAMENT_ENDS:
-		    //Do something after the tournament is over;
+		    //Reset log messages and display tournament winner
 		    	this.resetMessage();
 		    	this.announceWinner(args[0]);
 		        break;
 		    case EVENTLISTENER.ERROR:
-		    //Do something IN CASE OF ERROR;
+		    //Handle any error that might occur in the tournament
 		    	this.handleError(args[0], args[1]);
 		        break;
-		    default :
-		    //Handle default case;
 		}
 	}
+	/**
+	 * Handles error that occur in tournament
+	 * @param  {String} errorType    Type of error
+	 * @param  {String} errorMessage error message that needs to be displayed
+	 * @return {void}              
+	 */
 	handleError(errorType, errorMessage){
 		this.showMessage(errorMessage, true);
-		this.hideElement(domElements.loader);
+		ClientUtility.hideElement(domElements.loader);
 	}
+	/**
+	 * Show match winner to the user
+	 * @param  {number} round RoundId of the match
+	 * @param  {number} match id of the match
+	 * @param  {Object} team  Team information of the winning team
+	 * @return {void}       
+	 */
 	showMatchWinner(round, match, team){
 		let message = `Winner of Round - ${round + 1}, Match - ${match + 1} is ${team.name}`;
 		this.showMessage(message);
 	}
+	/**
+	 * Resets the view to the initial state
+	 * @return {void} 
+	 */
 	resetView(){
-		this.hideElement(domElements.winnerElem.parentElement);
-		this.hideElement(domElements.tournamentProgress.progress);
-		this.hideElement(domElements.cocGif);
+		ClientUtility.hideElement(domElements.winnerElem.parentElement);
+		ClientUtility.hideElement(domElements.tournamentProgress.progress);
+		ClientUtility.hideElement(domElements.cocGif);
+		this.resetMatchList();
 		this.resetMessage();
 	}
+	/**
+	 * Display Tournament winner to the user 
+	 * @param  {Object} winningTeam Info of the winning team
+	 * @return {void}             
+	 */
 	announceWinner(winningTeam){
-		this.hideElement(domElements.cocGif);
+		ClientUtility.hideElement(domElements.cocGif);
 		domElements.winnerElem.innerHTML = winningTeam.name;
-		this.showElement(domElements.winnerElem.parentElement);
+		ClientUtility.showElement(domElements.winnerElem.parentElement);
 	}
+	/**
+	 * Fetches id of the tile which represents a match
+	 * @param  {number} round 
+	 * @param  {number} match 
+	 * @return {String}       
+	 */
 	getId(round, match){
 		return `match${round}T${match}`;
 	}
+	/**
+	 * Fills tile with colour given a round and a match
+	 * @param  {[type]} round [description]
+	 * @param  {[type]} match [description]
+	 * @return {[type]}       [description]
+	 */
 	fillTile(round, match){
+		//id of the tile representing a match
 		let id = `#${this.getId(round, match)}`;
 		let currentMatch = domElements.tournamentProgress.matches.querySelector(id);
-		this.removeClass(currentMatch, "blink");
-		this.addClass(currentMatch, "done");
+		//removing blink class
+		ClientUtility.removeClass(currentMatch, "blink");
+		//adding done class
+		ClientUtility.addClass(currentMatch, "done");
 	}
+	/**
+	 * Blinks a tile which denotes that the match is in progress
+	 * @param  {number} round 
+	 * @param  {number} match 
+	 * @return {void}       
+	 */
 	blinkTile(round, match){
 		let id = `#${this.getId(round, match)}`;
 		let currentMatch = domElements.tournamentProgress.matches.querySelector(id);
-		this.addClass(currentMatch, "blink");
+		ClientUtility.addClass(currentMatch, "blink");
 	}
-	showElement(elem){
-		elem.style.display = "block";
-	}
-	hideElement(elem){
-		elem.style.display = "none";
-	}
+	/**
+	 * Shows message to the user
+	 * @param  {String}  message - Message to be shown to the user
+	 * @param  {Boolean} isError - Checks if its an error message
+	 * @return {void}          
+	 */
 	showMessage(message, isError){
 		domElements.messageElem.innerHTML = message;
 		if(isError){
-			this.addClass(domElements.messageElem, "error");
+			ClientUtility.addClass(domElements.messageElem, "error");
 		}else{
-			this.removeClass(domElements.messageElem, "error");
+			ClientUtility.removeClass(domElements.messageElem, "error");
 		}
-	}
+	}	
+	/**
+	 * resets message displayed
+	 * @return {void} 
+	 */
 	resetMessage(){
 		domElements.messageElem.innerHTML = '';
 	}
-	addClass(elem, className){
-		elem.classList.add(className);
-	}
-	removeClass(elem, className){
-		elem.classList.remove(className);
-	}
+	
+	/**
+	 * removes all the match tiles
+	 * @return {void} 
+	 */
 	resetMatchList(){
 		const matches = domElements.tournamentProgress.matches;
 		while (matches.children[1]) {
 		    matches.removeChild(matches.children[1]);
 		}
 	}
-	displayMatchBars(teamsPerMatch, numberOfTeams, tournamentId){
-		this.showElement(domElements.cocGif);
-		this.resetMatchList();
+	/**
+	 * Displays match tiles by cloning base tile template
+	 * @param  {number} teamsPerMatch 
+	 * @param  {number} numberOfTeams 
+	 * @param  {number} tournamentId  
+	 * @return {void}               
+	 */
+	displayMatchTiles(teamsPerMatch, numberOfTeams, tournamentId){
+
 		let round = 0, match = 0, matchesPerRound = numberOfTeams/teamsPerMatch;
+		//the tile node template which will be used in clonning
 		const defaultNode = domElements.tournamentProgress.match;
+		//set display property to block for the default node to show all the clone nodes
+		ClientUtility.showElement(defaultNode);
+		//looping through all the rounds
 		while(matchesPerRound >= 1){
 			match = 0;
+			//looping through all matches in the round and creating nodes
 			for(let i = 0; i < matchesPerRound; i++){
+				//id of the match which will be unique per (roundId, matchId)
 				const matchId = this.getId(round, match);
+				//cloning the base node to create a match tile
 				const nextMatch = defaultNode.cloneNode(true);
-				this.showElement(nextMatch);
+				//assiging id to the element
 				nextMatch.setAttribute("id", matchId);
+				//add this tile to the dom
 				domElements.tournamentProgress.matches.appendChild(nextMatch);
+				//increment match counter
 				match++;
 			}
+			//increment round counter
 			round++;
+			//now the next round will have (matchesPerRound/teamsPerMatch) number of matches
 			matchesPerRound/=teamsPerMatch;
 		}
 		//Now hide defaultNode
-		this.hideElement(defaultNode);
+		ClientUtility.hideElement(defaultNode);
 		//show progress bar
-		this.showElement(domElements.tournamentProgress.progress);
+		ClientUtility.showElement(domElements.tournamentProgress.progress);
 		//show message that tournament has been created
 		this.showMessage(MESSAGES.TOURNAMENT_CREATED + tournamentId);
 	}

@@ -35,4 +35,38 @@ class ClientUtility {
 	    }
 	    return numberOfTeams;
 	}
+	/**
+	 * Showing any element in dom
+	 * @param  {Object} elem dom object of the element
+	 * @return {void}      
+	 */
+	static showElement(elem){
+		elem.style.display = "block";
+	}
+	/**
+	 * hides any element in dom
+	 * @param  {Object} elem Dom Object of the element
+	 * @return {void}      
+	 */
+	static hideElement(elem){
+		elem.style.display = "none";
+	}
+	/**
+	 * Adds class to the given dom element
+	 * @param {Object} elem      Dom element
+	 * @param {String} className class to be applied to the element
+	 * @return {void}
+	 */
+	static addClass(elem, className){
+		elem.classList.add(className);
+	}
+	/**
+	 * Removes class from the given dom element
+	 * @param  {Object} elem      Dom element
+	 * @param  {String} className class to be removed from the element
+	 * @return {void}           
+	 */
+	static removeClass(elem, className){
+		elem.classList.remove(className);
+	}
 }

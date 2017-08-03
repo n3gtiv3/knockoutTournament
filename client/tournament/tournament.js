@@ -24,9 +24,6 @@ class TournamentController {
 		this.model.reset();
 		//reset matchQueue 
 		this.matchQueue.reset();
-		//Index for tracking the number of matches for which the requests 
-		//of teams is sent; its for tracking only first round matches
-		this.matchIndex = 0;
 		//Match sent into match queue in bursts of 2
 		this.burst = TOURNAMENT.BURST;
 	}
@@ -38,13 +35,13 @@ class TournamentController {
 	 */
 	addMatchesToQueue(burstSize){
 		//if all the matches are pushed into the queue then return;
-		if(burstSize <= 0 || this.matchIndex >= this.matches.length){
+		if(burstSize <= 0 || this.matches.length === 0){
 			return ;
 		}
 		//iterate over teams to push all the teams to the queue;
-		this.iterateOverTeams(this.matches[this.matchIndex].teamIds, this.matches[this.matchIndex].match);
-		//increment the match index
-		++this.matchIndex;
+		this.iterateOverTeams(this.matches[0].teamIds, this.matches[0].match);
+		//remove top element from the matches array
+		this.matches.splice(0,1);
 		//recursively add matches to queue with remaining burst size 
 		this.addMatchesToQueue(burstSize - 1);
 	}
@@ -76,18 +73,19 @@ class TournamentController {
 		//reset the controller
 		this.resetController();
 		//set input values inside the model
-		this.model.setValues(teamsPerMatch, numberOfTeams);
+		this.model.saveInititalConfig(teamsPerMatch, numberOfTeams);
 		//If something results in an error inside model then return
 		if(this.model.error){
 			return ;
 		}
 		//setting max teams which after which the queue will fire an event;
 		this.matchQueue.setMaxTeams(this.model.teamsPerMatch);
-		//call create tournament service;
+		//call create tournament service to create tournament;
 		this.tournamentService.createTournament(this.model.teamsPerMatch, this.model.numberOfTeams)
 		.then((tournamentData) => {
 			//save tournament details in the model
-			this.model.setTournamentId(tournamentData.tournamentId);
+			this.model.setTournamentInfo(tournamentData.tournamentId);
+			//save first round matches
 			this.matches = tournamentData.matchUps;
 			//start first round;
 			this.addMatchesToQueue(2);
@@ -98,12 +96,25 @@ class TournamentController {
 			this.resetController();
 		})
 	}
+	/**
+	 * event handlers call this method for publishing an event
+	 * @param  {String}    eventName The event name for which the event is fired
+	 * @param  {...[any]} args      Arguments with which the event is published
+	 * @return {void}              
+	 */
 	notify(eventName, ...args){
 		if(eventName === EVENTLISTENER.CONDUCT_MATCH){
 			this.conductMatch(args[0], args[1]);
 		}
 	}
+	/**
+	 * This method conducts a match given a list of teams and a key which denotes roundId and matchId
+	 * @param  {List} teams list of teams to conduct a match
+	 * @param  {number} key   The hash String comprised of roundId and matchId
+	 * @return {void}       
+	 */
 	conductMatch(teams, key){
+		//Decoding the key to get matchId and roundId 
 		let [roundId = 0, matchId = 0] = Utility.decodeKey(key);
 		this.model.matchStarted(roundId, matchId);
 		//removing key since its not required anymore;
@@ -115,6 +126,8 @@ class TournamentController {
 		//resolving promises for all the teams
 		Promise.all(teamPromises)
 		.then((teamResponse) => {
+				//Now that the previous requests are resolved, pushing the next set of matches in first round
+				//inside the queue(if there are any)
 				this.addMatchesToQueue(2);
 				//getting list of team scores from teams list;
 				let teamScores = teamResponse.map((team) => team.score);
@@ -122,9 +135,15 @@ class TournamentController {
 					//calling getWinner service for getting the winner
 					this.tournamentService.getWinner(this.model.tournamentId, teamScores, response.score)
 					.then((response) => {
-						let newKey = Utility.getKey(roundId + 1, matchId, this.model.teamsPerMatch);
+						//Get winning team from the winner score response and team scores
 						let winningTeam = Utility.getWinningTeam(teamResponse, response.score);
+						//removing losing teams promise since we wont need them anymore
+						this.model.flushLosingTeams(teamResponse, winningTeam.teamId);
+						//getting new key for pushing the winner back to the match queue
+						let newKey = Utility.getKey(roundId + 1, matchId, this.model.teamsPerMatch);
+						//pushing the winning team to the match queue
 						this.matchQueue.push(winningTeam.teamId, newKey);
+						//updating model with the match winner
 						this.model.updateMatchWinner(roundId, matchId, winningTeam);
 					}, (error) => {
 						//handle getWinner error;
@@ -145,13 +164,21 @@ class TournamentController {
 			this.resetController();
 		});
 	}
+	/**
+	 * Get /team request promises given list of teams
+	 * @param  {list} teams List of teams
+	 * @return {Promise[]}       
+	 */
 	getTeamsPromises(teams){
 		return teams.map((teamId) => {
-			//this returns a promise for team 
+			//checks if promise is already present for this team id
 			if(!this.model.hasTeam(teamId)){
+				//asking tournament service for team promise
 				let team = this.tournamentService.getTeamData(this.model.tournamentId, teamId);
+				//pushing promise to the model for later use
 				this.model.addTeam(teamId, team);
 			}
+			//returning team promise stored in model
 			return this.model.getTeam(teamId);
 		})
 	}
