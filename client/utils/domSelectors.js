@@ -15,6 +15,8 @@ const domElements = {
 	winnerElem  : document.getElementById("winner"),
 	mainView    : document.getElementById("mainView"),
 	cocGif      : document.getElementById("coc"),
-	cocMusic    : document.getElementById("cocMusic")
+	bootUpAudio : document.getElementById("bootUpAudio"),
+	mainThemeAudio : document.getElementById("mainThemeAudio"),
+	winnerAudio : document.getElementById("winnerAudio")
 }
 

@@ -69,4 +69,7 @@ class ClientUtility {
 	static removeClass(elem, className){
 		elem.classList.remove(className);
 	}
+	static play(audioElement){
+		audioElement.play();
+	}
 }

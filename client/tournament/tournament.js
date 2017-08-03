@@ -92,8 +92,6 @@ class TournamentController {
 		}, (error) => {
 			//publish error to view;
 			this.model.setError(ERROR.CREATING_TOURNAMENT, Utility.getErrorMessage(error));
-			//reset controller if cannot create tournament
-			this.resetController();
 		})
 	}
 	/**
@@ -148,20 +146,14 @@ class TournamentController {
 					}, (error) => {
 						//handle getWinner error;
 						this.model.setError(ERROR.GETTING_WINNER, Utility.getErrorMessage(error));
-						//Reset controller if cannot get winner;
-						this.resetController();
 					});
 				}, (error) => {
 					//handle getMatchScore error
 					this.model.setError(ERROR.GETTING_MATCH_SCORE, Utility.getErrorMessage(error));
-					//Reset controller if cannot get match score;
-					this.resetController();
 				});
 		}, (error) => {
 			//handle teamScores error;
 			this.model.setError(ERROR.GETTING_TEAM_SCORES, Utility.getErrorMessage(error));
-			//Reset controller if any request fails 
-			this.resetController();
 		});
 	}
 	/**

@@ -16,5 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
 });
+//play bootupAudo
+ClientUtility.play(domElements.bootUpAudio);
+//play main theme after 5s
+setTimeout(()=>{ClientUtility.play(domElements.mainThemeAudio);}, 5000);
+
 
 })();

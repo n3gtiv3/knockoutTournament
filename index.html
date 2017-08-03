@@ -10,16 +10,22 @@
     <link rel="stylesheet" href="./client/css/confetti.css"> -->
   </head>
   <body >
-    <!-- Edit me. -->
+    <audio id = "mainThemeAudio"  loop style = "display:none;">
+      <source src="./client/sound/mainTheme.mp3" type="audio/mp3">
+    </audio>
+    <audio id = "bootUpAudio" style = "display:none;">
+      <source src="./client/sound/bootUp.mp3" type="audio/mp3">
+    </audio>
+    <audio id = "winnerAudio" style = "display:none;">
+      <source src="./client/sound/winner.mp3" type="audio/mp3">
+    </audio>
     <div id = "mainView">
         <div  class = "winner" style = "display: none;">
             <h1>congratulations</h1>
-            <h1 id="winner" ></h1>!!
+            <h1 id="winner" ></h1>
         </div>
         <div id = "coc" style = "display:none;"><img src = "./client/images/match.gif" /></div>
-        <div  style="display: none;">
-          <iframe id = "cocMusic" width="300" height="300" src="" frameborder="0" allowfullscreen=""></iframe>
-        </div>
+       
         <div class="message" id = "messageElem"></div>
         <div class = "mainDiv">
             <!-- For tests to pass, the IDs of the elements below MUST NOT change. -->
@@ -39,6 +45,7 @@
            </div>
         </div>
     </div>
+
 
     <script type = "application/javascript" src = "/client/utils/domSelectors.js"></script>
     <script type = "application/javascript" src = "/client/utils/constants.js"></script>

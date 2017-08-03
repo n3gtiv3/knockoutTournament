@@ -8,8 +8,8 @@ class TournamentModel extends PubSub{
 		super();
 		//teams list stores the promises for teams data with index as teamId
 		this.teams = [];
-		//error is set as false by default
-		this.error = false;
+		//input error is set as false by default
+		this.inputError = false;
 	}
 	/**
 	 * resets the model by deleleting all the existing data and going back to the initial state
@@ -21,7 +21,7 @@ class TournamentModel extends PubSub{
 		//deleting all the teams info
 		Utility.resetMap(this.teams);
 		//setting error back to false
-		this.error = false;
+		this.inputError = false;
 	}
 	/**
 	 * sets the initial tournament information
@@ -82,9 +82,11 @@ class TournamentModel extends PubSub{
 			this.publish(EVENTLISTENER.TOURNAMENT_INITIATED);
 		}else if(!teamsPerMatch){
 			//invalid teams per match error
+			this.inputError = true;
 			this.setError(ERROR.INVALID_INPUT, ERROR_MESSAGE.INVALID_TEAMS_PER_MATCH);
 		}else if(!numberOfTeams){
-			//invalid teams number of teams error
+			//invalid number of teams error
+			this.inputError = true;
 			this.setError(ERROR.INVALID_INPUT, ERROR_MESSAGE.INVALID_NUMBER_OF_TEAMS);
 		}
 	}
@@ -130,8 +132,6 @@ class TournamentModel extends PubSub{
 	 * @param {String} errorMessage Message about the error
 	 */
 	setError(errorType, errorMessage){
-		//setting error flag to true
-		this.error = true;
 		//now tournament cannot continue, so no tournament is in progress
 		this.tournamentInProgress = false;
 		//notifying the views about any error

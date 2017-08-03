@@ -57,7 +57,8 @@ class TournamentView {
 		    	this.announceWinner(args[0]);
 		        break;
 		    case EVENTLISTENER.ERROR:
-		    //Handle any error that might occur in the tournament
+		    	this.resetView();
+		    	//Handle any error that might occur in the tournament
 		    	this.handleError(args[0], args[1]);
 		        break;
 		}
@@ -69,7 +70,11 @@ class TournamentView {
 	 * @return {void}              
 	 */
 	handleError(errorType, errorMessage){
-		this.showMessage(errorMessage, true);
+		if(!errorMessage){
+			this.showMessage(MESSAGES.DEFAULT_ERROR_MESSAGE, true);
+		}else{
+			this.showMessage(errorMessage, true);
+		}
 		ClientUtility.hideElement(domElements.loader);
 	}
 	/**
@@ -103,6 +108,7 @@ class TournamentView {
 		ClientUtility.hideElement(domElements.cocGif);
 		domElements.winnerElem.innerHTML = winningTeam.name;
 		ClientUtility.showElement(domElements.winnerElem.parentElement);
+		ClientUtility.play(domElements.winnerAudio);
 	}
 	/**
 	 * Fetches id of the tile which represents a match
