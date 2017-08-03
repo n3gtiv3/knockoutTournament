@@ -1,12 +1,14 @@
+/**
+ * Match Queue maintains a queue for storing the teams which are currently available
+ * for conducting a match; We fill the queue until there are sufficient teams available
+ * to conduct a match;
+ */
 class MatchQueue extends PubSub{
 
-	/*
-		Match Queue maintains a queue for storing the teams which are currently available
-		for conducting a match; We fill the queue until there are sufficient teams available
-		to conduct a match;
-		@param {List[]} queue - set of queues where each each element in the set will be a queue containing teams
-		@param {number} maxTeams - maximum queue size in a round before staring a match
-	*/
+	/**
+	 * @param {List[]} queue - set of queues where each each element in the set will be a queue containing teams
+	 * @param {number} maxTeams - maximum queue size in a round before staring a match
+	 */
 	constructor(maxTeams){
 		super();
 		this.queue = [];
@@ -20,18 +22,29 @@ class MatchQueue extends PubSub{
 	}
 	/**
 	 * Pushes a team inside the list with some hash
-	 * @param  {number} key - hash value in which the element has to be pushed
-	 * @param  {number} elem - teamId 
+
+	 * Combination of roundId and matchId uniquely identify a match in the tournament
+	 * Hence creating a key from this combination to ensure teams are getting pushed in the 
+	 * correct match list in the queue.
+	 * 
+	 * @param  {number} roundId - Round Id of the match in which this team will compete
+	 * @param  {number} matchId - matchId of the match
+	 * @param  {number} teamId - teamId of the team to be pushed 
 	 */
-	push(elem, key){
-		let roundQueue = [];
+	push(teamId, key){
+		let teamList = [];
+		//If the key already contains a list then just push it in that list
 		if(this.queue.hasOwnProperty(key)){
-			roundQueue = this.queue[key];
+			teamList = this.queue[key];
 		}
-		roundQueue.push(elem);
-		this.queue[key] = roundQueue;
-		if(roundQueue.length === this.maxTeams){
-			this.publish(EVENTLISTENER.CONDUCT_MATCH, roundQueue, key);
+		//pushing teamId to the queue
+		teamList.push(teamId);
+		//updating the list in queue
+		this.queue[key] = teamList;
+		//if this list have enough teams to conduct a match then publish an event
+		//to the controller for conducting a match
+		if(teamList.length === this.maxTeams){
+			this.publish(EVENTLISTENER.CONDUCT_MATCH, teamList, key);
 		}
 	}
 	/**

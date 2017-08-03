@@ -11,7 +11,8 @@ const EVENTLISTENER = {
 
 const TOURNAMENT = {
 	FIRST_ROUND : 0,
-	MAX_REQUEST : 8
+	MAX_REQUEST : 8,
+	BURST       : 2
 }
 const REQUEST_TYPE = {
 	GET : "GET",

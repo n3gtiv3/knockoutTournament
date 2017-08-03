@@ -1,3 +1,6 @@
+/**
+ * Utility class to be used by the controllers and services
+ */
 class Utility{
 	/**
 	 * Encoding function for a particular match which becomes the key value
@@ -21,9 +24,12 @@ class Utility{
 	static decodeKey(key){
 		return key.split("#").map((elem) => elem - "");
 	}
-	
-	static getDelay(teamsPerMatch){
-		return TOURNAMENT.MIN_DELAY*teamsPerMatch;
+
+	static getDelay(){
+		return 100000;
+	}
+	static getBatchSize(teamsPerMatch){
+		return 10000/teamsPerMatch;
 	}
 	/**
 	 * Gets winning score given teams score and winning score

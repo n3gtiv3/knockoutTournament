@@ -1,56 +1,96 @@
-	class TournamentController {
-
+/**
+ * Tournament Controller enables the functioning of the application
+ * It starts the tournament and uses match queue to conduct the matches in the tournament
+ *
+ */
+class TournamentController {
+	/**
+	 * Model and Tournament Service is injected as the dependency
+	 * @param  {Object} model   Model stores the data for the application and talks to the view
+	 * @param  {Object} tournamentService Tournament service which is used for making api calls
+	 */
 	constructor(model, tournamentService){
 		this.model = model;
 		this.matchQueue = new MatchQueue();
 		this.matchQueue.subscribe(EVENTLISTENER.CONDUCT_MATCH, this);
 		this.tournamentService = tournamentService;
 	}
+	/**
+	 * resets controller variables
+	 * @return {void} 
+	 */
 	resetController(){
+		//reset model
 		this.model.reset();
+		//reset matchQueue 
 		this.matchQueue.reset();
+		//Index for tracking the number of matches for which the requests 
+		//of teams is sent; its for tracking only first round matches
+		this.matchIndex = 0;
+		//Match sent into match queue in bursts of 2
+		this.burst = TOURNAMENT.BURST;
 	}
-	//push the matches for first round into match queue with a delay;
-	addMatchesToQueue(matches, i){
-		if(i === matches.length){
+	/**
+	 * push matches for first round into match queue given the burst size
+	 *
+	 * @param {number} burstSize    decides how many matches are to be pushed into 
+	 *                              the queue at a time;
+	 */
+	addMatchesToQueue(burstSize){
+		//if all the matches are pushed into the queue then return;
+		if(burstSize <= 0 || this.matchIndex >= this.matches.length){
 			return ;
 		}
-		if(i === 0){
-			this.iterateOverTeams(matches[i].teamIds, matches[i].match);
-			this.addMatchesToQueue(matches, i + 1);
-		}else{
-			setTimeout(() => {
-				this.iterateOverTeams(matches[i].teamIds, matches[i].match);
-				this.addMatchesToQueue(matches, i + 1);
-			}, Utility.getDelay(i));
-		}
+		//iterate over teams to push all the teams to the queue;
+		this.iterateOverTeams(this.matches[this.matchIndex].teamIds, this.matches[this.matchIndex].match);
+		//increment the match index
+		++this.matchIndex;
+		//recursively add matches to queue with remaining burst size 
+		this.addMatchesToQueue(burstSize - 1);
 	}
+	/**
+	 * Iterates over list of teams in a match with given matchId and pushes into the match queue
+	 * @param  {List} teams   list of teams
+	 * @param  {number} matchId Id of the match
+	 * @return {void}        
+	 */
 	iterateOverTeams(teams, matchId){
 		teams.forEach((teamId) => {
+				//caculate the hash with which to store the team in the queue
 				let teamHash = Utility.getKey(TOURNAMENT.FIRST_ROUND, matchId, this.model.teamsPerMatch);
+				//pushing the team inside the list with key as
 				this.matchQueue.push(teamId, teamHash);
 		});
 	}
-	createMatchQueue(teamsPerMatch){
-		this.matchQueue.setMaxTeams(teamsPerMatch);
-	}
+	/**
+	 * Start the tournament given teamsPerMatch and number of teams
+	 * @param  {String} teamsPerMatch total teams playing in a match
+	 * @param  {String} numberOfTeams [description]
+	 * @return {void}              
+	 */
 	startTournament(teamsPerMatch, numberOfTeams){
+		//If any tournament is already in progress then return;
 		if(this.model.tournamentInProgress){
 			return ;
 		}
+		//reset the controller
 		this.resetController();
+		//set input values inside the model
 		this.model.setValues(teamsPerMatch, numberOfTeams);
+		//If something results in an error inside model then return
 		if(this.model.error){
 			return ;
 		}
-		this.createMatchQueue(this.model.teamsPerMatch);
+		//setting max teams which after which the queue will fire an event;
+		this.matchQueue.setMaxTeams(this.model.teamsPerMatch);
 		//call create tournament service;
 		this.tournamentService.createTournament(this.model.teamsPerMatch, this.model.numberOfTeams)
 		.then((tournamentData) => {
 			//save tournament details in the model
 			this.model.setTournamentId(tournamentData.tournamentId);
+			this.matches = tournamentData.matchUps;
 			//start first round;
-			this.addMatchesToQueue(tournamentData.matchUps, 0);
+			this.addMatchesToQueue(2);
 		}, (error) => {
 			//publish error to view;
 			this.model.setError(ERROR.CREATING_TOURNAMENT, Utility.getErrorMessage(error));
@@ -75,6 +115,7 @@
 		//resolving promises for all the teams
 		Promise.all(teamPromises)
 		.then((teamResponse) => {
+				this.addMatchesToQueue(2);
 				//getting list of team scores from teams list;
 				let teamScores = teamResponse.map((team) => team.score);
 				matchPromise.then((response) => {
