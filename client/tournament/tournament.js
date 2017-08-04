@@ -75,7 +75,7 @@ class TournamentController {
 		//set input values inside the model
 		this.model.saveInititalConfig(teamsPerMatch, numberOfTeams);
 		//If something results in an error inside model then return
-		if(this.model.error){
+		if(this.model.inputError){
 			return ;
 		}
 		//setting max teams which after which the queue will fire an event;
